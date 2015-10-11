@@ -1,0 +1,13 @@
+name: YouTubeTutorial
+version: 0.0.1
+description: My First Plugin
+author: angpower
+main: net.angpower.Main.MainClass
+commands:
+  message:
+    description: youtube tutorial message command.
+    aliases: msg
+  heal:
+    description: youtube tutorial heal command.
+    aliases: h
+    permission: tutorial.heal
