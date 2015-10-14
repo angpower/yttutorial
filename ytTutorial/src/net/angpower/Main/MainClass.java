@@ -1,25 +1,46 @@
 package net.angpower.Main;
 
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.angpower.Commands.MsgCommand;
+import net.angpower.Listeners.BlockChangerListener;
 import net.angpower.Listeners.SignClickEvent;
 import net.angpower.Listeners.SignCreateEvent;
 
 public class MainClass extends JavaPlugin {
 	
 	public PluginDescriptionFile pdffile = this.getDescription();
+	
+	public static class Global {
+		
+		public static boolean BCenable = false;
+		
+		public static ArrayList<String> Alive = new ArrayList<String>();
+		public static ArrayList<Player> BlockChangerUsers = new ArrayList<Player>();
+		
+	}
+	
 	public void onEnable() {
 		PluginManager pm = Bukkit.getPluginManager();
+		
+		//register Other listeners
+		pm.registerEvents(new BlockChangerListener(this), this);
+		
+		//register events
 		pm.registerEvents(new SignCreateEvent(this), this);
 		pm.registerEvents(new SignClickEvent(this), this);
+		
+		//register commands
+		pm.registerEvents(new MsgCommand (this), this);
 		
 		getLogger().info(pdffile.getFullName() + " has been enabled. ");
 	}
@@ -28,58 +49,55 @@ public class MainClass extends JavaPlugin {
 		getLogger().info(pdffile.getFullName() + " has been disabled. ");
 	}
 	
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String args[]){
-		
-		if (cmd.getName().equalsIgnoreCase("message") == true){
-			if(sender instanceof Player) {
-				Player player = (Player) sender;
-				player.sendMessage(ChatColor.GOLD + "Hey Player");
-			}else if (sender instanceof ConsoleCommandSender){
-				getLogger().info("Hey Console");
-			}
-			return true;
-		}else if (cmd.getName().equalsIgnoreCase("heal") == true || cmd.getName().equalsIgnoreCase("h") == true){
-			if(sender instanceof Player) {
-				Player player = (Player) sender;
-				if (player.hasPermission("tutorial.heal") == true){
-				if (args.length == 0) {   // args like not added a name ex: /heal 
-					player.setHealth(20);
-					player.sendMessage(ChatColor.GREEN + " you Healed Yourself! ");
-				}else if (args.length == 1){  // args like you added a name ex: /heal name
-				  if (player.getServer().getPlayer(args[0]) != null) {
-					Player target = player.getServer().getPlayer(args[0]);
-					target.setHealth(20);
-					target.sendMessage(ChatColor.GREEN + " You have been Healed by! " + ChatColor.GOLD + player.getName());
-					player.sendMessage(ChatColor.GREEN + " You have Healed player " + ChatColor.GOLD + target.getName());
-					
-				}else{
-					player.sendMessage(ChatColor.RED + " This Player does not Exist! ");
-				}
-			}else {
-				player.sendMessage(ChatColor.RED + " Incorrect usage! ");
-			}
-		}else {
-			player.sendMessage(ChatColor.RED + " you don't have Permission! ");
+	
+	//Global procedures
+		public static void IncorrectUse(Player player) {
+			player.sendMessage(ChatColor.RED + "[ERROR] Incorrect usage!");
 		}
-				
-		} else if (sender instanceof ConsoleCommandSender){
-			if (args.length == 1){
-				  if (Bukkit.getServer().getPlayer(args[0]) != null) {
-					Player target = Bukkit.getServer().getPlayer(args[0]);
-					target.setHealth(20);
-					target.sendMessage(ChatColor.GREEN + " You have been Healed by! " + ChatColor.GOLD + "Console");
-					getLogger().info( " You have Healed player " + target.getName());
-					
-				}else{
-					getLogger().warning( " This Player does not Exist! ");
-				}
-			}else {
-				getLogger().warning( " Incorrect Usage! ");
-			}
-		}
-			return true;
-	}	
 		
-		return false;
-	}
+		public static void NoPerms(Player player) {
+			player.sendMessage(ChatColor.RED + "[ERROR] You don't have permissions to do that!");
+		}
+		
+		public static Player getPlayer(String name) {
+			
+			Player player = null;
+			
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				if (p.getName().equals(name) == true) {
+					player = p;
+				}
+			}
+			
+			return player;
+		}
+		
+		@Override
+		public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) 
+		{
+			if (cmd.getName().equalsIgnoreCase("BlockChanger"))
+				toggleBlockChanger(sender);
+			
+			return true;
+		}
+		
+		private void toggleBlockChanger(CommandSender sender) 
+		{
+			if (!BCenable ((Player) sender ))
+			{
+				Global.BlockChangerUsers.add((Player) sender);
+				((Player)sender).sendMessage(ChatColor.BLUE + " BlockChanger has been Enabled! ");
+				Global.BCenable = true;
+			}else {
+				Global.BlockChangerUsers.remove((Player) sender);
+				((Player) sender).sendMessage(ChatColor.RED + "BlockChanger has been Disabled! ");
+				Global.BCenable = false;
+			}
+			
+		}
+		
+		public boolean BCenable(Player player)
+		{
+			return Global.BlockChangerUsers.contains(player);
+		}
 }

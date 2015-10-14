@@ -10,4 +10,7 @@ commands:
   heal:
     description: youtube tutorial heal command.
     aliases: h
-    permission: tutorial.heal
+    permission: UHC.HOST
+  blockchanger:
+    description: changes the block it touch
+    permission: UHC.HOST
