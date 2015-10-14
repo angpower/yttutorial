@@ -11,7 +11,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import net.angpower.Commands.MsgCommand;
+import net.angpower.Commands.HealCommand;
 import net.angpower.Listeners.BlockChangerListener;
 import net.angpower.Listeners.SignClickEvent;
 import net.angpower.Listeners.SignCreateEvent;
@@ -40,7 +40,7 @@ public class MainClass extends JavaPlugin {
 		pm.registerEvents(new SignClickEvent(this), this);
 		
 		//register commands
-		pm.registerEvents(new MsgCommand (this), this);
+		pm.registerEvents(new HealCommand(this), this);
 		
 		getLogger().info(pdffile.getFullName() + " has been enabled. ");
 	}

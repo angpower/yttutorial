@@ -14,11 +14,11 @@ import org.bukkit.plugin.Plugin;
 import net.angpower.Main.MainClass;
 import net.angpower.Main.MainClass.Global;
 
-public class MsgCommand implements Listener {
+public class HealCommand implements Listener {
 	
 	public static Plugin plugin;
 	
-	public MsgCommand(MainClass instance) {
+	public HealCommand(MainClass instance) {
 		plugin = instance;
 	}
 	
